@@ -50,11 +50,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   letter-spacing: 0.005em;
-  /* faint dust grain across the whole site */
-  background:
-    radial-gradient(1200px 800px at 20% 0%, #14141e 0%, transparent 60%),
-    radial-gradient(900px 700px at 100% 100%, #16131c 0%, transparent 55%),
-    var(--ink-1);
+  /* Flat dark base — earlier radial gradients introduced subtle vertical
+   * color bands on wide pages that read as unwanted blocking. */
+  background: var(--ink-1);
   min-height: 100vh;
 }
 body::before {
@@ -226,7 +224,9 @@ em { font-family: var(--serif); font-style: italic; }
 .page-eyebrow { color: var(--bone-4); margin-bottom: 14px; }
 .page-title {
   font-family: var(--serif-zh); font-weight: 300;
-  font-size: clamp(40px, 5vw, 64px);
+  /* Unified across all pages — matches the gallery title size so every
+   * section header reads at the same visual weight. */
+  font-size: clamp(28px, 3vw, 40px);
   line-height: 1.05; letter-spacing: -0.005em;
   margin: 0 0 16px;
   color: var(--bone-1);
@@ -816,9 +816,18 @@ em { font-family: var(--serif); font-style: italic; }
 .idx-enter:hover { border-color: var(--moon); color: var(--moon); }
 
 .page-gallery {
-  padding-top: clamp(28px, 4vw, 56px);
+  /* Gallery uses the default .page padding so the title appears at the
+   * same vertical position as every other section. */
 }
 .page-gallery .gx-head { margin-bottom: clamp(20px, 3vw, 36px); }
+.page-gallery .gx-head-r {
+  display: flex; flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.page-gallery .gx-head-r .page-meta {
+  margin: 4px 0 0;
+}
 
 .gx-series-intro {
   padding: clamp(24px, 3vw, 40px) 0 clamp(20px, 2.5vw, 32px);
@@ -931,9 +940,9 @@ em { font-family: var(--serif); font-style: italic; }
   max-width: min(620px, 80vw);
   max-height: 56vh;
   position: relative;
-  box-shadow:
-    0 50px 100px -30px rgba(0,0,0,0.7),
-    0 0 0 1px rgba(255,255,255,0.04);
+  /* No outline / box-shadow — earlier 1px white inset created a visible
+   * border line around the artwork, and the dark spread shadow combined
+   * with the spot-beam read as a colour block beside the painting. */
   will-change: transform;
 }
 .gx-spot-frame--incoming {
@@ -955,12 +964,7 @@ em { font-family: var(--serif); font-style: italic; }
 }
 .gx-spot-frame > .artwork-frame { background: transparent; height: 100%; }
 .gx-spot-beam {
-  position: absolute;
-  top: -10%; left: 50%; transform: translateX(-50%);
-  width: 110%; height: 25%;
-  background: radial-gradient(ellipse at center, rgba(255,248,224,0.18) 0%, transparent 70%);
-  filter: blur(26px);
-  pointer-events: none;
+  display: none;
 }
 
 /* Filmstrip slide animations.
@@ -1156,7 +1160,8 @@ em { font-family: var(--serif); font-style: italic; }
 }
 
 /* ── Statement page ─────────────────────────────────────────────────── */
-.page-statement { max-width: 980px; }
+.page-statement .page-head,
+.page-statement .stmt-frame { max-width: 980px; }
 .stmt-frame {
   padding: clamp(40px, 6vw, 80px) clamp(28px, 4vw, 56px);
   background: var(--ink-2);
@@ -1171,7 +1176,7 @@ em { font-family: var(--serif); font-style: italic; }
 .stmt-head { margin-bottom: 48px; }
 .stmt-title {
   font-family: var(--serif-zh); font-weight: 300;
-  font-size: clamp(40px, 5vw, 64px);
+  font-size: clamp(28px, 3vw, 40px);
   line-height: 1.05; letter-spacing: -0.005em;
   margin: 0;
 }
@@ -1438,7 +1443,12 @@ em { font-family: var(--serif); font-style: italic; }
 }
 
 /* ── Contact page ───────────────────────────────────────────────────── */
-.page-contact { max-width: 760px; }
+/* The page itself uses the default .page max-width so the title aligns
+ * horizontally with every other section. Inner content (card + footnote)
+ * is constrained to a readable width via the body classes below. */
+.page-contact .contact-card,
+.page-contact .contact-foot,
+.page-contact .page-head { max-width: 760px; }
 .contact-card {
   border-top: 1px solid var(--rule-2);
   border-bottom: 1px solid var(--rule-2);

@@ -25,7 +25,7 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
   // Book-flip transition: when navigation happens, the currently-displayed
   // work becomes "outgoing" and rotates out around its spine, revealing the
   // new work behind it. After the animation ends, we drop the outgoing.
-  const [outgoing, setOutgoing] = React.useState(null);     // { work, dir } | null
+  const [outgoing, setOutgoing] = React.useState(null); // { work, dir } | null
   const lastSeenRef = React.useRef(work);
   const dirRef = React.useRef("next");
   const FLIP_MS = 600;
@@ -40,14 +40,14 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
     lastSeenRef.current = work;
   }, [work.id]);
 
-  const prev = () => { dirRef.current = "prev"; setIndex((safeIdx - 1 + filtered.length) % filtered.length); };
-  const next = () => { dirRef.current = "next"; setIndex((safeIdx + 1) % filtered.length); };
+  const prev = () => {dirRef.current = "prev";setIndex((safeIdx - 1 + filtered.length) % filtered.length);};
+  const next = () => {dirRef.current = "next";setIndex((safeIdx + 1) % filtered.length);};
   useKeyNav(prev, next);
 
   const wInfo = lang === "zh" ? work.zh : work.en;
   const medium = work.medium ? lang === "zh" ? work.medium.zh : work.medium.en : "—";
   const size = work.size ? lang === "zh" ? work.size.zh : work.size.en : "—";
-  const seriesName = series ? (lang === "zh" ? series.zh.name : series.en.name) : null;
+  const seriesName = series ? lang === "zh" ? series.zh.name : series.en.name : null;
 
   return (
     <div className="gx-spot">
@@ -63,16 +63,16 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
             <ArtworkFrame work={work} sizing="contain" showLabel={!work.src} paper={false} />
           </div>
           {/* outgoing work — slides out alongside the new one */}
-          {outgoing && (
-            <div
-              className={`gx-spot-frame gx-spot-frame--outgoing gx-spot-frame--${outgoing.dir}`}
-              style={{ aspectRatio: window.aspectFor(outgoing.work) }}
-              key={`out-${outgoing.work.id}-${Date.now()}`}
-            >
+          {outgoing &&
+          <div
+            className={`gx-spot-frame gx-spot-frame--outgoing gx-spot-frame--${outgoing.dir}`}
+            style={{ aspectRatio: window.aspectFor(outgoing.work) }}
+            key={`out-${outgoing.work.id}-${Date.now()}`}>
+            
               <div className="gx-spot-beam" />
               <ArtworkFrame work={outgoing.work} sizing="contain" showLabel={!outgoing.work.src} paper={false} />
             </div>
-          )}
+          }
         </div>
         <button className="gx-nav gx-nav-r" onClick={next} aria-label={t.gallery.next}>
           <span className="gx-nav-arrow">→</span>
@@ -82,9 +82,7 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
 
       <div className="gx-brief">
         <div className="gx-brief-no mono">
-          W—{work.id} <span className="dim">／</span> {String(safeIdx + 1).padStart(2, "0")}
-          <span className="dim"> / </span>
-          {String(filtered.length).padStart(2, "0")}
+          W—{work.id}
         </div>
         <h2 className="gx-brief-title">{wInfo.title}</h2>
         <div className="gx-brief-sub">{wInfo.sub}</div>
@@ -92,18 +90,18 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
           <span>{work.year}</span>
           <span className="sep">·</span>
           <span>{medium}</span>
-          {size && size !== "—" && (
-            <>
+          {size && size !== "—" &&
+          <>
               <span className="sep">·</span>
               <span>{size}</span>
             </>
-          )}
-          {seriesName && (
-            <>
+          }
+          {seriesName &&
+          <>
               <span className="sep">·</span>
               <span>{seriesName}</span>
             </>
-          )}
+          }
         </div>
         {work.zh.caption &&
         <p className="gx-brief-caption">
@@ -123,7 +121,7 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
             <div className="gx-rail-thumb-img">
               <ArtworkImage work={w} label={false} sizing="cover" />
             </div>
-            <span className="mono">{w.id}</span>
+            <span className="mono">{String(i + 1).padStart(2, "0")}</span>
           </button>
         )}
       </div>
@@ -247,11 +245,14 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
   const all = window.ARTWORKS;
   const list = seriesFilter === "all" ? all : all.filter((w) => w.series === seriesFilter);
   const activeSeries = seriesFilter === "all" ? null : window.SERIES.find((s) => s.id === seriesFilter);
+  // Clamp index to the current filtered list so the header counter stays
+  // accurate when the user switches series.
+  const safeIdx = Math.max(0, Math.min(index, list.length - 1));
   // Only show series that actually have works assigned to them. Series with
   // zero works (e.g. just-added placeholders for upcoming uploads) stay
   // hidden from the filter UI until the first work is tagged.
   const populatedSeries = window.SERIES.filter((s) =>
-    all.some((w) => w.series === s.id)
+  all.some((w) => w.series === s.id)
   );
 
   return (
@@ -260,11 +261,6 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
         <div className="gx-head-l">
           <div className="page-eyebrow mono">{t.gallery.subtitle}</div>
           <h1 className="page-title">{t.gallery.title}</h1>
-          <div className="page-meta mono">
-            <span>{t.gallery.total}</span>
-            <span className="sep">·</span>
-            <span>{list.length} / {all.length}</span>
-          </div>
         </div>
         <div className="gx-head-r">
           <div className="gx-filter">
@@ -287,40 +283,43 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
               {t.gallery.filter_series}
             </button>
           </div>
-          {seriesFilter !== "all" && (
-            <div className="gx-filter-sub">
+          {seriesFilter !== "all" &&
+          <div className="gx-filter-sub">
               {populatedSeries.map((s) =>
-                <button
-                  key={s.id}
-                  className={`gx-filter-sub-pill ${seriesFilter === s.id ? "active" : ""}`}
-                  onClick={() => {
-                    setSeriesFilter(s.id);
-                    setIndex(0);
-                  }}>
+            <button
+              key={s.id}
+              className={`gx-filter-sub-pill ${seriesFilter === s.id ? "active" : ""}`}
+              onClick={() => {
+                setSeriesFilter(s.id);
+                setIndex(0);
+              }}>
                   <span className="mono">{s.no}</span> {lang === "zh" ? s.zh.name : s.en.name}
                 </button>
-              )}
+            )}
             </div>
-          )}
+          }
+          <div className="page-meta mono">
+            <span>{String(safeIdx + 1).padStart(2, "0")} / {String(list.length).padStart(2, "0")}</span>
+          </div>
         </div>
       </header>
 
-      {activeSeries && (
-        <div className="gx-series-intro">
+      {activeSeries &&
+      <div className="gx-series-intro">
           <div className="gx-series-no mono">SERIES {activeSeries.no} ／ {list.length} {t.series_page.pieces}</div>
           <h2 className="gx-series-name">
             <span className="gx-series-name-zh">{lang === "zh" ? activeSeries.zh.name : activeSeries.en.name}</span>
-            {activeSeries.zh.name !== activeSeries.en.name && (
-              <span className="gx-series-name-en">
+            {activeSeries.zh.name !== activeSeries.en.name &&
+          <span className="gx-series-name-en">
                 {lang === "zh" ? activeSeries.en.name : activeSeries.zh.name}
               </span>
-            )}
+          }
           </h2>
           <p className="gx-series-note">
             {lang === "zh" ? activeSeries.zh.note : activeSeries.en.note}
           </p>
         </div>
-      )}
+      }
 
       {layout === "spotlight" &&
       <GallerySpotlight

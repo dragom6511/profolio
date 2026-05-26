@@ -2,7 +2,7 @@
 
 // Pages in linear order for scroll-snap navigation. Scrolling past the bottom
 // or top of the page advances/retreats through this list.
-const PAGE_ORDER = ["home", "works", "statement", "journal", "about", "contact"];
+const PAGE_ORDER = ["home", "works", "statement", "about", "contact"];
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "lang": "zh",
@@ -91,7 +91,9 @@ function useScrollSnapNav(page, setPage) {
         if (s.accum >= THRESHOLD) navigateBy(-1);
       } else {
         s.accum = 0;
-        if (edge.at !== null) setEdge({ at: null, progress: 0 });
+        // Use updater form so the closure's stale `edge` doesn't prevent
+        // the clear — react will skip rerender if state hasn't changed.
+        setEdge((prev) => (prev.at === null ? prev : { at: null, progress: 0 }));
       }
     };
 
@@ -285,7 +287,7 @@ function TopNav({ t, lang, page, setPage, setTweak }) {
   ["home", t.nav.home],
   ["works", t.nav.works],
   ["statement", t.nav.statement],
-  ["journal", t.nav.journal],
+  // ["journal", t.nav.journal], // hidden — no content yet
   ["about", t.nav.about],
   ["contact", t.nav.contact]];
 

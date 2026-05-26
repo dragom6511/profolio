@@ -3,11 +3,11 @@
 function StatementPage({ t, lang }) {
   return (
     <section className="page page-statement">
+      <header className="page-head stmt-head">
+        <div className="page-eyebrow mono">{t.statement_subtitle}</div>
+        <h1 className="page-title">{t.statement_title}</h1>
+      </header>
       <div className="stmt-frame">
-        <header className="stmt-head">
-          <div className="page-eyebrow mono">{t.statement_subtitle}</div>
-          <h1 className="stmt-title">{t.statement_title}</h1>
-        </header>
         <div className="stmt-body">
           {t.statement_body.map((p, i) =>
           <p key={i} className={`stmt-p stmt-p-${i}`}>

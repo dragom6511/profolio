@@ -38,6 +38,7 @@ window.COPY = {
       title: "作品",
       subtitle: "Works",
       total: "共二十件",
+      pieces_label: "件作品",
       layout_label: "陳列方式",
       layouts: {
         spotlight: "聚光燈",
@@ -148,6 +149,7 @@ window.COPY = {
       title: "Works",
       subtitle: "作品",
       total: "Twenty pieces in total",
+      pieces_label: "works",
       layout_label: "Layout",
       layouts: {
         spotlight: "Spotlight",
@@ -223,7 +225,7 @@ window.COPY = {
 };
 
 window.CONTACT = {
-  email: "dragom.studio@protonmail.com",
-  ig: "dragom.draws",
-  ig_url: "https://instagram.com/dragom.draws",
+  email: "dragom3608@hotmail.com",
+  ig: "chishathatplanett",
+  ig_url: "https://instagram.com/chishathatplanett",
 };
