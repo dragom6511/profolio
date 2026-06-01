@@ -1,4 +1,4 @@
-// Statement, About, Series, Contact pages.
+// Statement, About, Contact pages.
 
 function StatementPage({ t, lang }) {
   return (
@@ -11,13 +11,15 @@ function StatementPage({ t, lang }) {
         <div className="stmt-body">
           {t.statement_body.map((p, i) =>
           <p key={i} className={`stmt-p stmt-p-${i}`}>
-              <span className="stmt-mark mono">{String(i + 1).padStart(2, "0")}</span>
-              <span className="stmt-text">{p}</span>
+              {t.statement_body.length > 1 &&
+            <span className="stmt-mark mono">{String(i + 1).padStart(2, "0")}</span>
+            }
+              <span className="stmt-text" style={{ fontSize: "18px", letterSpacing: "2px" }}>{p}</span>
             </p>
           )}
         </div>
         <div className="stmt-sign mono">
-          {t.artist} ／ {t.artist_en} · 2024
+          {t.artist}　{t.artist_en} · 2026
         </div>
       </div>
     </section>);
@@ -34,8 +36,8 @@ function VineCluster({ className }) {
       className={`vine ${className || ""}`}
       viewBox="0 0 120 80"
       xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
+      aria-hidden="true">
+      
       <g fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="1.2">
         <path d="M 4 70 Q 30 20, 60 38 T 116 14" />
         <path d="M 22 50 Q 16 44, 16 36" opacity="0.7" />
@@ -47,8 +49,8 @@ function VineCluster({ className }) {
         <path d="M 50 18 Q 60 12, 66 18 Q 60 26, 50 18 Z" />
         <path d="M 92 10 Q 102 4, 108 12 Q 102 18, 92 10 Z" />
       </g>
-    </svg>
-  );
+    </svg>);
+
 }
 
 function AboutPage({ t, lang }) {
@@ -67,20 +69,8 @@ function AboutPage({ t, lang }) {
         <div className="about-col about-bio">
           <div className="about-eyebrow mono">{t.about.bio_eyebrow}</div>
           {t.about.bio.map((p, i) =>
-          <p key={i} className="about-p">{p}</p>
+          <p key={i} className="about-p" style={{ fontSize: "15px" }}>{p}</p>
           )}
-        </div>
-
-        <div className="about-col about-facts">
-          <div className="about-eyebrow mono">{t.about.facts_eyebrow}</div>
-          <dl>
-            {t.about.facts.map(([k, v]) =>
-            <div key={k} className="about-fact">
-                <dt className="mono">{k}</dt>
-                <dd>{v}</dd>
-              </div>
-            )}
-          </dl>
         </div>
 
         <div className="about-col about-cv">
@@ -94,57 +84,6 @@ function AboutPage({ t, lang }) {
             )}
           </ul>
         </div>
-      </div>
-    </section>);
-
-}
-
-function SeriesPage({ t, lang, onOpen }) {
-  return (
-    <section className="page page-series">
-      <header className="page-head">
-        <div className="page-eyebrow mono">{t.series_page.subtitle}</div>
-        <h1 className="page-title">{t.series_page.title}</h1>
-        <p className="page-lede">{t.series_page.lede}</p>
-      </header>
-
-      <div className="series-list">
-        {window.SERIES.map((s) => {
-          const works = window.ARTWORKS.filter((w) => w.series === s.id);
-          return (
-            <article key={s.id} className="series-row">
-              <div className="series-row-l">
-                <div className="series-no mono">SERIES {s.no}</div>
-                <h2 className="series-name">
-                  <span className="series-name-zh">{s.zh.name}</span>
-                  <span className="series-name-en">{s.en.name}</span>
-                </h2>
-                <div className="series-note">
-                  {lang === "zh" ? s.zh.note : s.en.note}
-                </div>
-                <div className="series-count mono">
-                  {works.length} {t.series_page.pieces}
-                </div>
-              </div>
-              <div className="series-row-r">
-                {works.slice(0, 5).map((w, i) => {
-                  const globalIdx = window.ARTWORKS.findIndex((x) => x.id === w.id);
-                  return (
-                    <button
-                      key={w.id}
-                      className="series-thumb"
-                      style={{ aspectRatio: window.aspectFor(w) }}
-                      onClick={() => onOpen(globalIdx)}>
-                      
-                      <ArtworkImage work={w} label={false} sizing="cover" />
-                      <div className="series-thumb-cap mono">W—{w.id}</div>
-                    </button>);
-
-                })}
-              </div>
-            </article>);
-
-        })}
       </div>
     </section>);
 
@@ -197,5 +136,4 @@ function ContactPage({ t, lang }) {
 
 window.StatementPage = StatementPage;
 window.AboutPage = AboutPage;
-window.SeriesPage = SeriesPage;
 window.ContactPage = ContactPage;

@@ -18,14 +18,55 @@ function aspectFor(work) {
   return ASPECT_RATIOS[work.aspect] || 1;
 }
 
+// Lazy-load CSS background images: only assign the url() once the element has
+// scrolled near the viewport. Backgrounds can't use loading="lazy", and
+// IntersectionObserver proved unreliable in some embedded contexts, so we use
+// a getBoundingClientRect check on mount + a throttled scroll/resize listener.
+function useNearViewport(margin = 700) {
+  const ref = React.useRef(null);
+  const [shown, setShown] = React.useState(false);
+  React.useEffect(() => {
+    if (shown) return;
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const check = () => {
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      // r.height === 0 means layout isn't ready yet — treat as "check again".
+      if (r.height > 0 && r.top < vh + margin && r.bottom > -margin) {
+        setShown(true);
+        return true;
+      }
+      return false;
+    };
+    const onScroll = () => { if (check()) cleanup(); };
+    const cleanup = () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onScroll);
+    };
+    // Immediate check, plus a rAF in case layout isn't settled on mount.
+    if (check()) return cleanup;
+    raf = requestAnimationFrame(() => { if (!check()) {/* wait for scroll */} });
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onScroll);
+    return cleanup;
+  }, [shown, margin]);
+  return [ref, shown];
+}
+
 function ArtworkImage({ work, label, sizing = "contain", className = "", style = {} }) {
+  // Hook must run unconditionally — call it before any early return.
+  const [lazyRef, shown] = useNearViewport();
   if (work.src) {
     const borderedCls = work.bordered ? " bordered" : "";
     return (
       <div
-        className={`artwork-img has-src${borderedCls} ${className}`}
+        ref={lazyRef}
+        className={`artwork-img has-src${borderedCls}${shown ? "" : " is-loading"} ${className}`}
         style={{
-          backgroundImage: `url(${work.src})`,
+          backgroundImage: shown ? `url(${work.src})` : "none",
           backgroundSize: sizing === "cover" ? "cover" : "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

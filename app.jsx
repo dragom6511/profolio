@@ -2,7 +2,7 @@
 
 // Pages in linear order for scroll-snap navigation. Scrolling past the bottom
 // or top of the page advances/retreats through this list.
-const PAGE_ORDER = ["home", "works", "statement", "about", "contact"];
+const PAGE_ORDER = ["home", "works", "statement", "about"];
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "lang": "zh",
@@ -223,22 +223,8 @@ function App() {
           setSeriesFilter={setSeriesFilter} />
 
         }
-        {page === "series" &&
-        <Gallery
-          t={t}
-          lang={lang}
-          layout={tweaks.layout}
-          setLayout={(v) => setTweak("layout", v)}
-          index={artIndex}
-          setIndex={setArtIndex}
-          seriesFilter={seriesFilter}
-          setSeriesFilter={setSeriesFilter} />
-
-        }
         {page === "statement" && <StatementPage t={t} lang={lang} />}
-        {page === "journal" && <JournalPage t={t} lang={lang} />}
         {page === "about" && <AboutPage t={t} lang={lang} />}
-        {page === "contact" && <ContactPage t={t} lang={lang} />}
       </main>
       <SiteFooter t={t} lang={lang} setPage={setPage} />
       <ScrollSnapHint edge={edge} page={page} t={t} />
@@ -287,9 +273,7 @@ function TopNav({ t, lang, page, setPage, setTweak }) {
   ["home", t.nav.home],
   ["works", t.nav.works],
   ["statement", t.nav.statement],
-  // ["journal", t.nav.journal], // hidden — no content yet
-  ["about", t.nav.about],
-  ["contact", t.nav.contact]];
+  ["about", t.nav.about]];
 
   return (
     <header className="topnav">
@@ -328,17 +312,28 @@ function TopNav({ t, lang, page, setPage, setTweak }) {
 }
 
 function SiteFooter({ t, lang, setPage }) {
+  const [copied, setCopied] = React.useState(false);
+  const copyEmail = (e) => {
+    e.preventDefault();
+    navigator.clipboard?.writeText(window.CONTACT.email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  };
   return (
     <footer className="site-footer mono">
       <div className="ft-l">
-        <div className="ft-name">© 2024 {t.artist} ／ Dragom</div>
+        <div className="ft-name">© 2026 {t.artist}  Dragom</div>
         <div className="ft-note">{t.contact.footer_note}</div>
       </div>
       <div className="ft-r">
-        <a href={window.CONTACT.ig_url} target="_blank" rel="noreferrer">
-          IG ↗
+        <button type="button" className="ft-contact" onClick={copyEmail} title={t.contact.copy}>
+          <span className="ft-c-label">{copied ? t.contact.copied : t.contact.email_label}</span>
+          <span className="ft-c-val">{window.CONTACT.email}</span>
+        </button>
+        <a className="ft-contact" href={window.CONTACT.ig_url} target="_blank" rel="noreferrer">
+          <span className="ft-c-label">{t.contact.ig_label}</span>
+          <span className="ft-c-val">@{window.CONTACT.ig}</span>
         </a>
-        <a href={`mailto:${window.CONTACT.email}`}>EMAIL ↗</a>
       </div>
     </footer>);
 

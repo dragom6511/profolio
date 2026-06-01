@@ -15,7 +15,7 @@ function useKeyNav(prev, next) {
   }, [prev, next]);
 }
 
-function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries }) {
+function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries, onZoom }) {
   const list = window.ARTWORKS;
   const filtered = activeSeries === "all" ? list : list.filter((w) => w.series === activeSeries);
   const safeIdx = Math.max(0, Math.min(index, filtered.length - 1));
@@ -28,7 +28,7 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
   const [outgoing, setOutgoing] = React.useState(null); // { work, dir } | null
   const lastSeenRef = React.useRef(work);
   const dirRef = React.useRef("next");
-  const FLIP_MS = 600;
+  const FLIP_MS = 420;
 
   React.useEffect(() => {
     if (lastSeenRef.current && lastSeenRef.current.id !== work.id) {
@@ -58,9 +58,15 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
         </button>
         <div className="gx-spot-art" data-flip-dir={dirRef.current}>
           {/* incoming / now-displayed work */}
-          <div className="gx-spot-frame gx-spot-frame--incoming" key={work.id} style={{ aspectRatio: window.aspectFor(work) }}>
+          <div
+            className="gx-spot-frame gx-spot-frame--incoming gx-spot-frame--zoomable"
+            key={work.id}
+            style={{ aspectRatio: window.aspectFor(work) }}
+            onClick={() => onZoom && onZoom(safeIdx)}
+            title={lang === "zh" ? "放大檢視" : "View larger"}>
             <div className="gx-spot-beam" />
             <ArtworkFrame work={work} sizing="contain" showLabel={!work.src} paper={false} />
+            <span className="gx-spot-zoom mono" aria-hidden="true">⤢</span>
           </div>
           {/* outgoing work — slides out alongside the new one */}
           {outgoing &&
@@ -138,17 +144,14 @@ function Field({ label, value }) {
 
 }
 
-function GalleryGrid({ t, lang, setIndex, setLayout, list }) {
+function GalleryGrid({ t, lang, onZoom, list }) {
   return (
     <div className="gx-grid">
       {list.map((w, i) =>
       <button
         key={w.id}
         className="gx-cell"
-        onClick={() => {
-          setIndex(i);
-          setLayout("spotlight");
-        }}>
+        onClick={() => onZoom(i)}>
         
           <div className="gx-cell-img">
             <ArtworkImage work={w} label={false} sizing="cover" />
@@ -163,17 +166,14 @@ function GalleryGrid({ t, lang, setIndex, setLayout, list }) {
 
 }
 
-function GalleryMasonry({ t, lang, setIndex, setLayout, list }) {
+function GalleryMasonry({ t, lang, onZoom, list }) {
   return (
     <div className="gx-masonry">
       {list.map((w, i) =>
       <button
         key={w.id}
         className="gx-m-cell"
-        onClick={() => {
-          setIndex(i);
-          setLayout("spotlight");
-        }}>
+        onClick={() => onZoom(i)}>
         
           <div className="gx-cell-img" style={{ aspectRatio: window.aspectFor(w) }}>
             <ArtworkImage work={w} label={false} sizing="cover" />
@@ -199,7 +199,7 @@ const ED_PATTERN = [
 { col: "8 / 13", row: 2, ar: "wide", tone: "lg" }];
 
 
-function GalleryEditorial({ t, lang, setIndex, setLayout, list }) {
+function GalleryEditorial({ t, lang, onZoom, list }) {
   // group of 6 → 1 strip
   const strips = [];
   for (let i = 0; i < list.length; i += 6) strips.push(list.slice(i, i + 6));
@@ -215,10 +215,7 @@ function GalleryEditorial({ t, lang, setIndex, setLayout, list }) {
               key={w.id}
               className={`gx-edit-cell tone-${slot.tone}`}
               style={{ gridColumn: slot.col, gridRow: slot.row }}
-              onClick={() => {
-                setIndex(globalIdx);
-                setLayout("spotlight");
-              }}>
+              onClick={() => onZoom(globalIdx)}>
               
                 <div className="gx-edit-cell-img" style={{ aspectRatio: window.aspectFor({ aspect: slot.ar }) }}>
                   <ArtworkImage work={w} label={false} sizing="cover" />
@@ -255,6 +252,10 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
   all.some((w) => w.series === s.id)
   );
 
+  // Lightbox: holds the index (into the current filtered `list`) of the work
+  // being studied full-screen, or null when closed.
+  const [zoom, setZoom] = React.useState(null);
+
   return (
     <section className="page page-gallery">
       <header className="gx-head">
@@ -283,9 +284,8 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
               {t.gallery.filter_series}
             </button>
           </div>
-          {seriesFilter !== "all" &&
-          <div className="gx-filter-sub">
-              {populatedSeries.map((s) =>
+          <div className="gx-filter-sub" aria-hidden={seriesFilter === "all"}>
+              {seriesFilter !== "all" && populatedSeries.map((s) =>
             <button
               key={s.id}
               className={`gx-filter-sub-pill ${seriesFilter === s.id ? "active" : ""}`}
@@ -297,29 +297,11 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
                 </button>
             )}
             </div>
-          }
           <div className="page-meta mono">
             <span>{String(safeIdx + 1).padStart(2, "0")} / {String(list.length).padStart(2, "0")}</span>
           </div>
         </div>
       </header>
-
-      {activeSeries &&
-      <div className="gx-series-intro">
-          <div className="gx-series-no mono">SERIES {activeSeries.no} ／ {list.length} {t.series_page.pieces}</div>
-          <h2 className="gx-series-name">
-            <span className="gx-series-name-zh">{lang === "zh" ? activeSeries.zh.name : activeSeries.en.name}</span>
-            {activeSeries.zh.name !== activeSeries.en.name &&
-          <span className="gx-series-name-en">
-                {lang === "zh" ? activeSeries.en.name : activeSeries.zh.name}
-              </span>
-          }
-          </h2>
-          <p className="gx-series-note">
-            {lang === "zh" ? activeSeries.zh.note : activeSeries.en.note}
-          </p>
-        </div>
-      }
 
       {layout === "spotlight" &&
       <GallerySpotlight
@@ -327,17 +309,28 @@ function Gallery({ t, lang, layout, setLayout, index, setIndex, seriesFilter, se
         lang={lang}
         index={index}
         setIndex={setIndex}
-        activeSeries={seriesFilter} />
+        activeSeries={seriesFilter}
+        onZoom={setZoom} />
 
       }
       {layout === "grid" &&
-      <GalleryGrid t={t} lang={lang} setIndex={setIndex} setLayout={setLayout} list={list} />
+      <GalleryGrid t={t} lang={lang} onZoom={setZoom} list={list} />
       }
       {layout === "masonry" &&
-      <GalleryMasonry t={t} lang={lang} setIndex={setIndex} setLayout={setLayout} list={list} />
+      <GalleryMasonry t={t} lang={lang} onZoom={setZoom} list={list} />
       }
       {layout === "editorial" &&
-      <GalleryEditorial t={t} lang={lang} setIndex={setIndex} setLayout={setLayout} list={list} />
+      <GalleryEditorial t={t} lang={lang} onZoom={setZoom} list={list} />
+      }
+
+      {zoom !== null &&
+      <Lightbox
+        list={list}
+        index={zoom}
+        setIndex={setZoom}
+        onClose={() => setZoom(null)}
+        lang={lang}
+        t={t} />
       }
     </section>);
 

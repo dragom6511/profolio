@@ -220,7 +220,7 @@ em { font-family: var(--serif); font-style: italic; }
 /* ── Main + footer scaffold ──────────────────────────────────────────── */
 .main { min-height: calc(100vh - var(--nav-h)); position: relative; }
 
-.page { padding: clamp(40px, 6vw, 96px) var(--pad) clamp(60px, 8vw, 120px); max-width: 1480px; margin: 0 auto; }
+.page { padding: clamp(24px, 3vw, 44px) var(--pad) clamp(60px, 8vw, 120px); max-width: 1480px; margin: 0 auto; }
 .page-eyebrow { color: var(--bone-4); margin-bottom: 14px; }
 .page-title {
   font-family: var(--serif-zh); font-weight: 300;
@@ -252,8 +252,16 @@ em { font-family: var(--serif); font-style: italic; }
   font-size: 11px;
 }
 .site-footer .ft-name { color: var(--bone-2); margin-bottom: 6px; letter-spacing: 0.1em; }
-.site-footer .ft-r a:hover { color: var(--bone-1); }
-.site-footer .ft-r { display: flex; gap: 18px; justify-content: flex-end; }
+.site-footer .ft-r { display: flex; gap: 40px; justify-content: flex-end; }
+.site-footer .ft-contact {
+  display: flex; flex-direction: column; gap: 4px;
+  text-align: right;
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: inherit; cursor: pointer;
+}
+.site-footer .ft-c-label { color: var(--bone-5); letter-spacing: 0.14em; text-transform: uppercase; }
+.site-footer .ft-c-val { color: var(--bone-2); letter-spacing: 0.04em; text-transform: none; }
+.site-footer .ft-contact:hover .ft-c-val { color: var(--bone-1); }
 
 /* ── Artwork image / frame ───────────────────────────────────────────── */
 .artwork-img {
@@ -268,6 +276,13 @@ em { font-family: var(--serif); font-style: italic; }
 }
 .artwork-img.bordered {
   transform: scale(1.05);
+}
+/* While the lazy background hasn't loaded yet, show a calm tonal placeholder
+ * and fade the image in once the url() is assigned. */
+.artwork-img.has-src { transition: opacity 0.4s ease; }
+.artwork-img.has-src.is-loading {
+  opacity: 0;
+  background-color: var(--bone-7, #1a1d26);
 }
 .artwork-img.placeholder { isolation: isolate; }
 .artwork-img__strata {
@@ -325,9 +340,9 @@ em { font-family: var(--serif); font-style: italic; }
 }
 .gh-ambience {
   position: absolute; inset: 0;
-  background:
-    radial-gradient(80% 60% at 50% 30%, rgba(220,210,180,0.07) 0%, transparent 65%),
-    radial-gradient(60% 50% at 50% 75%, rgba(150,140,170,0.05) 0%, transparent 70%);
+  /* Flattened to match every other tab — the landing now shows the plain
+   * page background instead of a lit "room". */
+  background: none;
   pointer-events: none;
   z-index: 0;
 }
@@ -354,24 +369,19 @@ em { font-family: var(--serif); font-style: italic; }
 }
 .gh-wall-back {
   inset: 0;
-  background: linear-gradient(180deg,
-    rgba(0,0,0,0.0) 0%,
-    rgba(0,0,0,0.25) 38%,
-    rgba(0,0,0,0.45) 55%,
-    rgba(0,0,0,0.6) 65%,
-    rgba(0,0,0,0) 100%);
+  background: none;
 }
 /* Side-wall sheen: dark vertical bands close to the page edges that fade
  * inward, giving the suggestion of perspective walls meeting the floor. */
 .gh-wall-left {
   top: 0; bottom: 0; left: 0;
   width: 22%;
-  background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+  background: none;
 }
 .gh-wall-right {
   top: 0; bottom: 0; right: 0;
   width: 22%;
-  background: linear-gradient(270deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+  background: none;
 }
 
 /* Row of works hanging on the back wall. Bottom-aligned: every painting
@@ -400,19 +410,12 @@ em { font-family: var(--serif); font-style: italic; }
   padding: 0;
   cursor: pointer;
 }
-/* Soft cone of light coming from above each piece — gallery track light */
+/* Soft cone of light coming from above each piece — gallery track light.
+ * Removed so the landing background reads as plain black like every other
+ * tab; the paintings now sit on the flat page background. */
 .gh-piece-spot {
-  position: absolute;
-  top: -50px; left: 50%; transform: translateX(-50%);
-  width: 180%; height: 70%;
-  background: radial-gradient(ellipse at top, rgba(255,245,220,0.25) 0%, transparent 60%);
-  filter: blur(16px);
-  pointer-events: none;
-  opacity: 0.9;
-  transition: opacity 0.3s;
-  z-index: 1;
+  display: none;
 }
-.gh-piece:hover .gh-piece-spot { opacity: 1; }
 .gh-piece-frame {
   display: block;
   position: relative;
@@ -455,10 +458,13 @@ em { font-family: var(--serif); font-style: italic; }
  * and faded out so it reads as a surface-mirror, not a duplicated print. */
 .gh-piece-reflection {
   /* Anchor the reflection BELOW the frame using absolute positioning so
-   * it doesn't contribute to the row's intrinsic height. */
+   * it doesn't contribute to the row's intrinsic height. Start exactly at
+   * the frame's bottom edge using its real height (--piece-h, inherited
+   * from the .gh-piece button) — a fixed 160px offset let taller frames on
+   * tall viewports overlap their own reflection. */
   display: block;
   position: absolute;
-  top: 160px; /* sits flush below the frame */
+  top: var(--piece-h, 160px);
   left: 0;
   width: 100%;
   height: 100%;
@@ -493,14 +499,9 @@ em { font-family: var(--serif); font-style: italic; }
   bottom: -2vh;
   height: 28vh;
   pointer-events: none;
-  background:
-    /* faint horizontal sheen */
-    radial-gradient(60% 30% at 50% 30%, rgba(220,210,180,0.05) 0%, transparent 70%),
-    /* dark floor gradient, receding into shadow */
-    linear-gradient(180deg,
-      rgba(20,22,28,0) 0%,
-      rgba(15,16,20,0.6) 45%,
-      rgba(8,9,14,0.95) 100%);
+  /* Removed the wet-floor gradient — reflections now fall on the plain
+   * black page background, same as every other tab. */
+  background: none;
   z-index: 0;
 }
 
@@ -517,9 +518,10 @@ em { font-family: var(--serif); font-style: italic; }
   margin-bottom: 4px;
 }
 .gh-invitation-title {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 6px;
-  max-width: 36ch;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  max-width: 40ch;
   text-wrap: balance;
 }
 .gh-zh {
@@ -531,10 +533,12 @@ em { font-family: var(--serif); font-style: italic; }
   color: var(--bone-1);
 }
 .gh-en {
-  font-family: var(--serif); font-style: italic;
-  font-size: clamp(14px, 1.2vw, 18px);
-  color: var(--bone-3);
-  letter-spacing: 0.02em;
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: clamp(15px, 1.4vw, 21px);
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  color: var(--bone-4);
 }
 .gh-enter {
   display: inline-flex; align-items: center; gap: 14px;
@@ -565,9 +569,36 @@ em { font-family: var(--serif); font-style: italic; }
 .gh-corner-l .sub, .gh-corner-r .sub { color: var(--bone-5); }
 
 @media (max-width: 760px) {
-  .gh-hangrow { gap: 14px; padding: 0 12px; flex-wrap: wrap; }
-  .gh-piece-frame, .gh-piece-reflection { width: 96px; }
-  .gh-floor { height: 18vh; }
+  /* On narrow viewports the single museum row overflows. Switch to a
+   * centered wrapping wall: each piece becomes a normal-flow column that
+   * carries its OWN reflection beneath it, so wrapped rows never overlap
+   * the row below (the desktop layout floats reflections absolutely). */
+  .gh-room { min-height: 0; }
+  .gh-hangrow {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: clamp(16px, 3.5vw, 30px) clamp(14px, 3.2vw, 26px);
+    padding: 4px 16px 0;
+  }
+  .gh-piece { display: flex; flex-direction: column; align-items: stretch; }
+  .gh-piece-frame {
+    height: auto;
+    width: clamp(108px, 22vw, 168px);
+    max-width: none;
+  }
+  .gh-piece-reflection {
+    position: static;
+    top: auto; left: auto;
+    width: 100%; height: auto;
+    margin-top: 2px;
+  }
+  .gh-floor { display: none; }
+}
+
+@media (max-width: 540px) {
+  .gh-piece-frame { width: clamp(96px, 27vw, 138px); }
+  .gh-corner-l, .gh-corner-r { display: none; }
 }
 
 /* ── Landing — A · Spotlight (legacy, kept for backward compat) ──────── */
@@ -816,8 +847,9 @@ em { font-family: var(--serif); font-style: italic; }
 .idx-enter:hover { border-color: var(--moon); color: var(--moon); }
 
 .page-gallery {
-  /* Gallery uses the default .page padding so the title appears at the
-   * same vertical position as every other section. */
+  /* Trimmed top padding per request — the works header sits a little
+   * higher, closer to the nav, than the other sections. */
+  padding-top: clamp(24px, 3vw, 44px);
 }
 .page-gallery .gx-head { margin-bottom: clamp(20px, 3vw, 36px); }
 .page-gallery .gx-head-r {
@@ -867,7 +899,7 @@ em { font-family: var(--serif); font-style: italic; }
 
 /* ── Gallery — header ────────────────────────────────────────────────── */
 .gx-head {
-  display: flex; justify-content: space-between; align-items: flex-end;
+  display: flex; justify-content: space-between; align-items: flex-start;
   gap: 32px; margin-bottom: clamp(32px, 5vw, 64px);
   padding-bottom: 24px;
   border-bottom: 1px solid var(--rule-1);
@@ -877,6 +909,9 @@ em { font-family: var(--serif); font-style: italic; }
 .gx-filter-sub {
   display: flex; gap: 6px; flex-wrap: wrap;
   margin-top: 10px;
+  /* Reserve one pill row's height so toggling All ↔ Series doesn't change
+   * the header height (which would shift the artwork + title below it). */
+  min-height: 31px;
 }
 .gx-filter-pill {
   display: inline-flex; gap: 8px; align-items: baseline;
@@ -930,6 +965,10 @@ em { font-family: var(--serif); font-style: italic; }
 .gx-spot-art {
   position: relative;
   width: 100%;
+  /* Fixed stage height so the prev/next buttons (centered against this box)
+   * don't drift as artworks change aspect ratio. Each piece is contained
+   * within this constant area. */
+  height: clamp(340px, 56vh, 620px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -938,7 +977,7 @@ em { font-family: var(--serif); font-style: italic; }
 .gx-spot-frame {
   width: 100%;
   max-width: min(620px, 80vw);
-  max-height: 56vh;
+  height: 100%;
   position: relative;
   /* No outline / box-shadow — earlier 1px white inset created a visible
    * border line around the artwork, and the dark spread shadow combined
@@ -948,7 +987,7 @@ em { font-family: var(--serif); font-style: italic; }
 .gx-spot-frame--incoming {
   /* Filmstrip-style slide-in. Direction comes from [data-flip-dir] on
    * the parent gx-spot-art — set whenever the user navigates. */
-  animation: filmSlideInNext 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: filmSlideInNext 0.42s cubic-bezier(0.33, 0, 0.2, 1);
 }
 .gx-spot-art[data-flip-dir="prev"] .gx-spot-frame--incoming {
   animation-name: filmSlideInPrev;
@@ -957,12 +996,12 @@ em { font-family: var(--serif); font-style: italic; }
   position: absolute;
   pointer-events: none;
   z-index: 1; /* under the incoming frame so the new image leads the eye */
-  animation: filmSlideOutNext 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: filmSlideOutNext 0.42s cubic-bezier(0.33, 0, 0.2, 1) forwards;
 }
 .gx-spot-frame--outgoing.gx-spot-frame--prev {
   animation-name: filmSlideOutPrev;
 }
-.gx-spot-frame > .artwork-frame { background: transparent; height: 100%; }
+.gx-spot-frame > .artwork-frame { background: transparent; height: 100%; width: 100%; }
 .gx-spot-beam {
   display: none;
 }
@@ -988,12 +1027,12 @@ em { font-family: var(--serif); font-style: italic; }
   100% { transform: translateX(0);     opacity: 1; }
 }
 @keyframes filmSlideOutNext {
-  0%   { transform: translateX(0);     opacity: 1;   filter: brightness(1); }
-  100% { transform: translateX(-110%); opacity: 0.4; filter: brightness(0.7); }
+  0%   { transform: translateX(0);     opacity: 1; }
+  100% { transform: translateX(-110%); opacity: 0; }
 }
 @keyframes filmSlideOutPrev {
-  0%   { transform: translateX(0);     opacity: 1;   filter: brightness(1); }
-  100% { transform: translateX(110%);  opacity: 0.4; filter: brightness(0.7); }
+  0%   { transform: translateX(0);     opacity: 1; }
+  100% { transform: translateX(110%);  opacity: 0; }
 }
 .gx-nav {
   display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -1017,7 +1056,7 @@ em { font-family: var(--serif); font-style: italic; }
 .gx-brief-no .dim { color: var(--bone-5); opacity: 0.6; }
 .gx-brief-title {
   font-family: var(--serif-zh); font-weight: 400;
-  font-size: clamp(22px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.7vw, 24px);
   line-height: 1.25;
   letter-spacing: 0.03em;
   margin: 4px 0 0;
@@ -1027,6 +1066,7 @@ em { font-family: var(--serif); font-style: italic; }
   font-family: var(--serif); font-style: italic;
   color: var(--bone-3);
   font-size: clamp(13px, 1vw, 15px);
+  white-space: pre-line;
 }
 .gx-brief-line {
   display: inline-flex; justify-content: center; gap: 10px;
@@ -1160,8 +1200,30 @@ em { font-family: var(--serif); font-style: italic; }
 }
 
 /* ── Statement page ─────────────────────────────────────────────────── */
-.page-statement .page-head,
-.page-statement .stmt-frame { max-width: 980px; }
+.page-statement .page-head { max-width: none; text-align: left; }
+/* Centered statement card: a contained box with a full border, holding the
+ * manifesto text centered in a comfortable measure. */
+.page-statement .stmt-frame {
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: clamp(56px, 7vw, 104px) clamp(32px, 5vw, 72px);
+  background: var(--ink-2);
+  border: 1px solid var(--rule-1);
+}
+.page-statement .stmt-frame::before { display: none; }
+.page-statement .stmt-body { max-width: 760px; margin-left: auto; margin-right: auto; }
+.page-statement .stmt-p { text-align: center; }
+.page-statement .stmt-text {
+  font-size: clamp(17px, 1.4vw, 22px);
+  line-height: 1.95;
+  color: var(--bone-1);
+  white-space: pre-line;
+}
+.page-statement .stmt-sign {
+  max-width: 760px; margin-left: auto; margin-right: auto;
+  text-align: center;
+}
 .stmt-frame {
   padding: clamp(40px, 6vw, 80px) clamp(28px, 4vw, 56px);
   background: var(--ink-2);
@@ -1201,6 +1263,8 @@ em { font-family: var(--serif); font-style: italic; }
 }
 .stmt-p-1 { padding: 8px 0 8px; }
 .stmt-mark { color: var(--bone-5); }
+/* Single-paragraph statement: no number mark, so collapse the mark column. */
+.stmt-p:only-child { grid-template-columns: 1fr; }
 .stmt-sign {
   margin-top: 48px; padding-top: 24px;
   border-top: 1px solid var(--rule-2);
@@ -1281,7 +1345,7 @@ em { font-family: var(--serif); font-style: italic; }
 /* Bio sits to the right of the portrait. about-grid (facts + cv) lives below. */
 .about-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr;
   gap: clamp(28px, 3vw, 56px) clamp(36px, 5vw, 72px);
 }
 
@@ -1291,6 +1355,7 @@ em { font-family: var(--serif); font-style: italic; }
   font-size: 16px; line-height: 1.8;
   color: var(--bone-2);
   margin: 0 0 16px;
+  white-space: pre-line;
 }
 .about-col dl { margin: 0; }
 .about-fact {
@@ -1488,5 +1553,156 @@ em { font-family: var(--serif); font-style: italic; }
   .gx-nav-label { writing-mode: horizontal-tb; transform: none; }
   .gx-plaque { grid-template-columns: 1fr; }
   .site-footer { grid-template-columns: 1fr; text-align: left; }
-  .site-footer .ft-r { justify-content: flex-start; }
+  .site-footer .ft-r { justify-content: flex-start; flex-wrap: wrap; gap: 28px; margin-top: 24px; }
+  .site-footer .ft-contact { text-align: left; }
+}
+
+/* ── Spotlight zoom affordance ──────────────────────────────────────── */
+.gx-spot-frame--zoomable { cursor: zoom-in; }
+.gx-spot-zoom {
+  position: absolute;
+  right: 10px; bottom: 10px;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  font-size: 15px; color: var(--bone-2);
+  background: rgba(12, 13, 18, 0.55);
+  border: 1px solid var(--rule-2);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.25s, color 0.25s, border-color 0.25s;
+  pointer-events: none;
+}
+.gx-spot-frame--zoomable:hover .gx-spot-zoom { opacity: 1; color: var(--moon); border-color: var(--moon); }
+.gx-cell, .gx-m-cell, .gx-edit-cell { cursor: zoom-in; }
+
+/* ── Lightbox ───────────────────────────────────────────────────────── */
+.lb {
+  position: fixed; inset: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-columns: clamp(48px, 8vw, 96px) 1fr clamp(48px, 8vw, 96px);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "top  top   top"
+    "navl stage navr"
+    "plaq plaq  plaq";
+  background: rgba(6, 6, 10, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: lbIn 0.28s ease;
+}
+@keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
+
+.lb-topbar {
+  grid-area: top;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 22px clamp(20px, 3vw, 40px);
+}
+.lb-cat { color: var(--bone-4); }
+.lb-count { color: var(--bone-2); letter-spacing: 0.18em; }
+.lb-close {
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--bone-3);
+  transition: color 0.2s;
+}
+.lb-close:hover { color: var(--bone-1); }
+.lb-close-x { font-size: 13px; }
+
+.lb-stage {
+  grid-area: stage;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; min-width: 0;
+  padding: 4px;
+}
+.lb-figure {
+  display: block;
+  width: auto; height: auto;
+  max-width: 100%;
+  max-height: min(100%, 82vh);
+  object-fit: contain;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+}
+/* Placeholder variant keeps an aspect-ratio box (no intrinsic image size). */
+.lb-figure--placeholder {
+  width: min(100%, 70vh);
+  height: auto;
+}
+.lb-figure--placeholder .artwork-img { width: 100%; height: 100%; }
+.lb-figure--next { animation: lbSlideNext 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.lb-figure--prev { animation: lbSlidePrev 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes lbSlideNext {
+  0% { transform: translateX(4%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes lbSlidePrev {
+  0% { transform: translateX(-4%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.lb-nav {
+  display: grid; place-items: center;
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 40px);
+  color: var(--bone-4);
+  transition: color 0.2s, transform 0.2s;
+}
+.lb-nav-l { grid-area: navl; }
+.lb-nav-r { grid-area: navr; }
+.lb-nav:hover { color: var(--moon); }
+.lb-nav-l:hover { transform: translateX(-3px); }
+.lb-nav-r:hover { transform: translateX(3px); }
+
+.lb-plaque {
+  grid-area: plaq;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 7px;
+  text-align: center;
+  padding: 18px clamp(20px, 3vw, 40px) 30px;
+}
+.lb-title {
+  font-family: var(--serif-zh); font-weight: 400;
+  font-size: clamp(20px, 2vw, 28px);
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--bone-1);
+}
+.lb-sub {
+  font-family: var(--serif); font-style: italic;
+  color: var(--bone-3);
+  font-size: clamp(13px, 1vw, 15px);
+}
+.lb-meta {
+  display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  color: var(--bone-4);
+  margin-top: 2px;
+}
+.lb-meta .sep { color: var(--bone-5); }
+.lb-caption {
+  font-family: var(--serif-zh);
+  font-size: 14px; line-height: 1.8;
+  color: var(--bone-3);
+  margin: 8px auto 0;
+  max-width: 54ch;
+}
+
+@media (max-width: 720px) {
+  .lb {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      "top"
+      "stage"
+      "navs"
+      "plaq";
+  }
+  .lb-nav { grid-area: navs; font-size: 30px; padding: 6px 30px; }
+  .lb-nav-l, .lb-nav-r { grid-area: navs; }
+  .lb-nav-l { justify-self: start; }
+  .lb-nav-r { justify-self: end; }
+  .lb-figure { max-height: min(100%, 62vh); }
 }

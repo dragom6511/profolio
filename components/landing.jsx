@@ -15,10 +15,10 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
   // Returns a CSS length string that respects viewport via vh.
   const pieceHeight = (w) => {
     const a = typeof w.aspect === "number" ? w.aspect : 1;
-    if (a < 0.7) return "clamp(160px, 28vh, 280px)";   // tall portrait
-    if (a < 0.95) return "clamp(150px, 25vh, 250px)";  // portrait
-    if (a < 1.15) return "clamp(120px, 20vh, 200px)";  // square
-    return "clamp(100px, 16vh, 160px)";                // landscape
+    if (a < 0.7) return "clamp(160px, 28vh, 280px)"; // tall portrait
+    if (a < 0.95) return "clamp(150px, 25vh, 250px)"; // portrait
+    if (a < 1.15) return "clamp(120px, 20vh, 200px)"; // square
+    return "clamp(100px, 16vh, 160px)"; // landscape
   };
 
   return (
@@ -36,13 +36,14 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
           <button
             key={w.id}
             className="gh-piece"
+            style={{ "--piece-h": pieceHeight(w) }}
             onClick={() => onOpen && onOpen(window.ARTWORKS.indexOf(w))}
             title={lang === "zh" ? w.zh.title : w.en.title}>
             
               <span className="gh-piece-spot" />
               <span
-                className="gh-piece-frame"
-                style={{ aspectRatio: window.aspectFor(w), "--piece-h": pieceHeight(w) }}>
+              className="gh-piece-frame"
+              style={{ aspectRatio: window.aspectFor(w), "--piece-h": pieceHeight(w) }}>
                 <span
                 className="gh-piece-art"
                 style={{ backgroundImage: `url(${w.src})` }} />
@@ -109,7 +110,7 @@ function LandingManifesto({ t, lang, onEnter }) {
               {t.landing.enter} →
             </button>
             <div className="mf-meta mono">
-              <div>20 works ／ 2021–2024</div>
+              <div>{window.ARTWORKS.length} works ／ 2021–2026</div>
               <div>{t.artist} ／ {t.artist_en}</div>
             </div>
           </div>
