@@ -30,7 +30,7 @@ window.COPY = {
     statement_title: "創作自述",
     statement_subtitle: "Statement",
     statement_body: [
-      "我創造出空無一人的世界。身而為人，卻踏入這樣的地方——你將會看見什麼？透過繪畫，我呈現一種安靜的語彙，描述與自我之間的對話。\n我們所熟悉的一切，不會永遠存在，思索社會與生活的變化，是當代重要的課題。",
+      "我創造出空無一人的世界。\n身而為人，卻踏入這樣的地方——會看見什麼？\n透過繪畫，我描繪一種安靜的語彙，闡述與自我之間的對話。\n我們所熟悉的一切，不會永遠存在，\n而思索社會與生活的變化，是當代重要的課題。",
     ],
     gallery: {
       title: "作品",
@@ -91,6 +91,7 @@ window.COPY = {
       copy: "複製",
       copied: "已複製",
       open: "開啟",
+      footer_invite: "收藏作品、委託訂製、合作，歡迎洽詢。",
       footer_note: "本網站作品著作權所有，未經同意請勿轉載。",
     },
     plaque: {
@@ -176,12 +177,11 @@ window.COPY = {
       bio: [
         "Dragom (Wu Hsiang-Lung), born in Taiwan in 1994, works through painting — using a quiet vocabulary to question the relationship between his subjects and everyday life.\nThe surfaces look soft, yet within them he keeps asking about frames and where the individual stands: when the outer frame is stripped away, where do we — as human beings — go from here?",
       ],
-      cv_eyebrow: "Selected",
+      cv_eyebrow: "Experience",
       cv: [
-        ["2024", "Series Skyline at the Border completed"],
-        ["2023", "Series Frameworks released via personal channels"],
-        ["2022", "Began the series Seams"],
-        ["2021", "Started a long-form hand-drawn journal practice"],
+        ["2024", "“Another Dimension” Taipei New Art Fair, Taipei World Trade Center Hall 1"],
+        ["2023", "“Where Hope Lies” illustration group exhibition, Dianmei Art Space"],
+        ["2022", "Finalist — Dianmei Illustration Award, “Turning the Light of Hope”"],
       ],
     },
     contact: {
@@ -193,6 +193,7 @@ window.COPY = {
       copy: "Copy",
       copied: "Copied",
       open: "Open",
+      footer_invite: "For acquisitions, commissions and collaborations — inquiries are welcome.",
       footer_note: "All works © the artist. Please don't repost without permission.",
     },
     plaque: {

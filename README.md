@@ -26,11 +26,12 @@ Open `index.html` in a browser. No build needed.
 - `app.jsx` — main shell, routing, tweaks, scroll-snap nav
 - `components/` — page-level components
   - `landing.jsx` — three home variants (museum / manifesto / index)
-  - `gallery.jsx` — works page with 4 layouts
+  - `gallery.jsx` — works page with multiple layouts
   - `pages.jsx` — statement / about / contact
-  - `journal.jsx` — process / behind-the-scenes
+  - `lightbox.jsx` — full-screen artwork viewer
   - `artwork.jsx` — artwork image / frame helpers
 - `tweaks-panel.jsx` / `image-slot.js` — utilities
 - `assets/` — paintings + portrait
+- `uploads/` — original source images (backup, not used by the live site)
 
 © 2024–2026 吳享龍 / Dragom. All artwork all rights reserved.

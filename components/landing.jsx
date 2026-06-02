@@ -21,6 +21,59 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
     return "clamp(100px, 16vh, 160px)"; // landscape
   };
 
+  // "Museum scaling": instead of reflowing the single hang-row into a grid on
+  // narrow screens, keep the EXACT arrangement and scale the whole row down
+  // uniformly so it always fits — like stepping back from the wall. We measure
+  // the row's natural (unscaled) width and apply a transform:scale to the inner
+  // wrapper. offsetWidth is a layout metric unaffected by the transform, so the
+  // measurement never feeds back on itself. Capped at 1 so it never grows past
+  // its intended desktop size. Only active in "scale" mode; "grid" mode lets the
+  // CSS media query reflow into a 2-up grid instead.
+  // "Museum scaling": on narrow screens, keep the EXACT single-row arrangement
+  // and scale the whole row down uniformly so it always fits — like stepping
+  // back from the wall — rather than reflowing into a grid. We measure the row's
+  // natural (unscaled) width and apply a transform:scale to the inner wrapper.
+  // offsetWidth is a layout metric unaffected by the transform, so the
+  // measurement never feeds back on itself. Capped at 1 so it never grows past
+  // its intended desktop size.
+  const innerRef = React.useRef(null);
+  React.useEffect(() => {
+    const inner = innerRef.current;
+    if (!inner) return;
+    const outer = inner.parentElement; // .gh-hangrow
+    if (!outer) return;
+    const recompute = () => {
+      const natural = inner.offsetWidth; // unscaled layout width of the full row
+      const cs = getComputedStyle(outer);
+      const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      const avail = outer.clientWidth - pad;
+      // Bail when the row hasn't been laid out yet (width ~0) so a transient
+      // zero measurement never permanently collapses the wall. The CSS default
+      // (var(--gh-scale, 1)) keeps it full-size until a real measurement lands.
+      if (avail <= 0 || natural <= 0) return;
+      const s = Math.max(0.1, Math.min(1, avail / natural));
+      inner.style.setProperty("--gh-scale", s.toFixed(4));
+    };
+    // Measure after the browser has actually laid out + painted the flex row.
+    // A single rAF can still fire before the first layout on a cold load, so
+    // double-rAF and a short timeout act as belt-and-suspenders.
+    let raf1 = 0, raf2 = 0;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(recompute);
+    });
+    const t = setTimeout(recompute, 120);
+    const ro = new ResizeObserver(recompute);
+    ro.observe(outer);
+    window.addEventListener("resize", recompute);
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      clearTimeout(t);
+      ro.disconnect();
+      window.removeEventListener("resize", recompute);
+    };
+  }, [wallWorks.length, lang]);
+
   return (
     <section className="landing landing-gallery">
       <div className="gh-ambience" />
@@ -32,6 +85,7 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
         <div className="gh-wall gh-wall-right" />
 
         <div className="gh-hangrow">
+          <div className="gh-hangrow-inner" ref={innerRef}>
           {wallWorks.map((w) =>
           <button
             key={w.id}
@@ -59,6 +113,7 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
               </span>
             </button>
           )}
+          </div>
         </div>
 
         <div className="gh-floor" aria-hidden="true" />

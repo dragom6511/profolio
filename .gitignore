@@ -1,0 +1,16 @@
+# macOS / Windows 系統雜檔
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 編輯器
+.vscode/
+.idea/
+*.swp
+
+# 草稿 / napkin 暫存
+scraps/
+*.napkin
+
+# 日誌
+*.log

@@ -193,6 +193,10 @@ function App() {
   const t = window.COPY[lang];
 
   const goWorks = (idx = 0) => {
+    // Clicking a piece on the landing passes its index into the FULL list, so
+    // clear any active series filter first — otherwise the index would resolve
+    // against a filtered subset and open the wrong artwork.
+    setSeriesFilter("all");
     setArtIndex(idx);
     setPage("works");
   };
@@ -269,15 +273,27 @@ function ScrollSnapHint({ edge, page, t }) {
 }
 
 function TopNav({ t, lang, page, setPage, setTweak }) {
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const items = [
   ["home", t.nav.home],
   ["works", t.nav.works],
   ["statement", t.nav.statement],
   ["about", t.nav.about]];
 
+  // Close the mobile sheet on Escape.
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  const go = (k) => { setPage(k); setMenuOpen(false); };
+
   return (
+    <React.Fragment>
     <header className="topnav">
-      <button className="brand" onClick={() => setPage("home")}>
+      <button className="brand" onClick={() => go("home")}>
         <span className="brand-avatar">
           <img src="assets/avatar-nav.png" alt="Dragom" />
         </span>
@@ -306,8 +322,41 @@ function TopNav({ t, lang, page, setPage, setTweak }) {
           <span className="lt-sep">／</span>
           <span className={lang === "en" ? "lt-on" : "lt-off"}>EN</span>
         </button>
+        <button
+          className={`nav-burger ${menuOpen ? "open" : ""}`}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((o) => !o)}>
+          
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-    </header>);
+    </header>
+      {/* Sheet + scrim live OUTSIDE the header: the header's backdrop-filter
+          would otherwise become the containing block for these position:fixed
+          layers and clip them to the nav bar. As siblings under .root (no
+          transform/filter) they pin to the viewport correctly. */}
+      {menuOpen &&
+      <React.Fragment>
+        <div className="nav-scrim" onClick={() => setMenuOpen(false)} />
+        <nav className="nav-sheet">
+          {items.map(([k, label], i) =>
+          <button
+            key={k}
+            className={`nav-sheet-link ${page === k ? "active" : ""}`}
+            style={{ animationDelay: `${0.04 + i * 0.04}s` }}
+            onClick={() => go(k)}>
+            
+              <span className="nav-sheet-label">{label}</span>
+              <span className="nav-sheet-no mono">{String(i + 1).padStart(2, "0")}</span>
+            </button>
+          )}
+        </nav>
+      </React.Fragment>
+      }
+    </React.Fragment>);
 
 }
 
@@ -326,14 +375,17 @@ function SiteFooter({ t, lang, setPage }) {
         <div className="ft-note">{t.contact.footer_note}</div>
       </div>
       <div className="ft-r">
-        <button type="button" className="ft-contact" onClick={copyEmail} title={t.contact.copy}>
-          <span className="ft-c-label">{copied ? t.contact.copied : t.contact.email_label}</span>
-          <span className="ft-c-val">{window.CONTACT.email}</span>
-        </button>
-        <a className="ft-contact" href={window.CONTACT.ig_url} target="_blank" rel="noreferrer">
-          <span className="ft-c-label">{t.contact.ig_label}</span>
-          <span className="ft-c-val">@{window.CONTACT.ig}</span>
-        </a>
+        <div className="ft-invite">{t.contact.footer_invite}</div>
+        <div className="ft-r-row">
+          <button type="button" className="ft-contact" onClick={copyEmail} title={t.contact.copy}>
+            <span className="ft-c-label">{copied ? t.contact.copied : t.contact.email_label}</span>
+            <span className="ft-c-val">{window.CONTACT.email}</span>
+          </button>
+          <a className="ft-contact" href={window.CONTACT.ig_url} target="_blank" rel="noreferrer">
+            <span className="ft-c-label">{t.contact.ig_label}</span>
+            <span className="ft-c-val">@{window.CONTACT.ig}</span>
+          </a>
+        </div>
       </div>
     </footer>);
 

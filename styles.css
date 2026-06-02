@@ -204,7 +204,7 @@ em { font-family: var(--serif); font-style: italic; }
   content: ""; position: absolute; left: 14px; right: 14px; bottom: -1px;
   height: 1px; background: var(--moon);
 }
-.topnav-r { justify-self: end; }
+.topnav-r { justify-self: end; display: inline-flex; align-items: center; gap: 10px; }
 .lang-toggle {
   display: inline-flex; gap: 8px; align-items: center;
   padding: 8px 14px;
@@ -216,6 +216,87 @@ em { font-family: var(--serif); font-style: italic; }
 .lang-toggle .lt-off { color: var(--bone-4); }
 .lang-toggle .lt-sep { color: var(--bone-5); }
 .lang-toggle:hover { border-color: var(--moon-dim); }
+
+/* ── Mobile nav: hamburger + drop sheet ─────────────────────────────────
+ * The desktop .navlinks are hidden ≤860px (see responsive trims). The burger
+ * reveals a dark drop-sheet of the same four destinations so small screens
+ * stay navigable. Hidden entirely on desktop. */
+.nav-burger {
+  display: none;
+  width: 44px; height: 44px;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px;
+  background: transparent; border: 0; padding: 0;
+  cursor: pointer;
+}
+.nav-burger span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--bone-2);
+  transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.18s;
+}
+.nav-burger:hover span { background: var(--bone-1); }
+.nav-burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.nav-scrim {
+  position: fixed; inset: 0;
+  z-index: 28;
+  background: rgba(6,7,10,0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+@keyframes navScrimIn { from { opacity: 0; } to { opacity: 1; } }
+
+.nav-sheet {
+  position: fixed;
+  top: var(--nav-h); left: 0; right: 0;
+  z-index: 29;
+  display: flex; flex-direction: column;
+  padding: 6px var(--pad) 22px;
+  background: linear-gradient(180deg, rgba(12,13,18,0.97) 0%, rgba(10,11,16,0.97) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--rule-2);
+  box-shadow: 0 24px 40px -20px rgba(0,0,0,0.7);
+  transform-origin: top;
+}
+@keyframes navSheetIn {
+  from { transform: translateY(-10px); }
+  to   { transform: translateY(0); }
+}
+.nav-sheet-link {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 13px 2px;
+  background: transparent; border: 0;
+  border-bottom: 1px solid var(--rule-1);
+  font-family: var(--serif-zh); font-weight: 300;
+  font-size: 17px; letter-spacing: 0.05em;
+  color: var(--bone-3);
+  cursor: pointer;
+  transition: color 0.2s, padding-left 0.25s;
+}
+@keyframes navLinkIn {
+  from { transform: translateX(-6px); }
+  to   { transform: translateX(0); }
+}
+.nav-sheet-link:last-child { border-bottom: 0; }
+.nav-sheet-link:hover { color: var(--bone-1); padding-left: 8px; }
+.nav-sheet-link.active { color: var(--moon); }
+.nav-sheet-no { font-size: 10px; color: var(--bone-5); letter-spacing: 0.16em; }
+.nav-sheet-link.active .nav-sheet-no { color: var(--moon-dim); }
+
+/* Entrance animation is an enhancement only — the resting state above is
+ * fully visible, so the menu still works with animations disabled. */
+@media (prefers-reduced-motion: no-preference) {
+  .nav-scrim { animation: navScrimIn 0.25s ease; }
+  .nav-sheet { animation: navSheetIn 0.32s cubic-bezier(0.2,0.8,0.2,1); }
+  .nav-sheet-link { animation: navLinkIn 0.4s cubic-bezier(0.2,0.8,0.2,1) backwards; }
+}
+
+@media (max-width: 860px) {
+  .nav-burger { display: inline-flex; }
+}
 
 /* ── Main + footer scaffold ──────────────────────────────────────────── */
 .main { min-height: calc(100vh - var(--nav-h)); position: relative; }
@@ -252,7 +333,12 @@ em { font-family: var(--serif); font-style: italic; }
   font-size: 11px;
 }
 .site-footer .ft-name { color: var(--bone-2); margin-bottom: 6px; letter-spacing: 0.1em; }
-.site-footer .ft-r { display: flex; gap: 40px; justify-content: flex-end; }
+.site-footer .ft-r { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+.site-footer .ft-invite {
+  color: var(--bone-3); letter-spacing: 0.06em; text-transform: none;
+  font-size: 12px; line-height: 1.5; max-width: 38ch; text-align: right;
+}
+.site-footer .ft-r-row { display: flex; gap: 40px; justify-content: flex-end; }
 .site-footer .ft-contact {
   display: flex; flex-direction: column; gap: 4px;
   text-align: right;
@@ -394,17 +480,33 @@ em { font-family: var(--serif); font-style: italic; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(28px, 4vw, 64px);
   padding: 0 clamp(20px, 4vw, 60px);
   width: 100%;
   z-index: 2;
 }
+/* Inner wrapper holds the actual row of pieces at its natural (max-content)
+ * width; the JS in LandingSpotlight scales THIS element uniformly so the
+ * museum arrangement stays identical and just shrinks to fit. */
+.gh-hangrow-inner {
+  display: inline-flex;
+  /* Stretch every piece to the tallest one's height so they share a single
+   * bottom edge — the common floor line — while each work stays vertically
+   * centred inside its own column (see .gh-piece). */
+  align-items: stretch;
+  gap: clamp(28px, 4vw, 64px);
+  transform: scale(var(--gh-scale, 1));
+  transform-origin: center center;
+}
 .gh-piece {
   position: relative;
-  /* No longer a flex column — we want only the frame to count toward
-   * the row's vertical layout. The reflection is positioned absolutely
-   * below the frame (see .gh-piece-reflection). */
-  display: block;
+  /* Stretched to the tallest piece's height; the frame is vertically centred
+   * inside (so every work stays on the shared centre line — the top rule),
+   * and the reflection is mirrored about the piece's bottom, which — because
+   * all pieces are equal height — is one common floor line for the whole row. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: transparent;
   border: 0;
   padding: 0;
@@ -457,30 +559,33 @@ em { font-family: var(--serif); font-style: italic; }
  * the same column width. The reflected frame inside is vertically flipped
  * and faded out so it reads as a surface-mirror, not a duplicated print. */
 .gh-piece-reflection {
-  /* Anchor the reflection BELOW the frame using absolute positioning so
-   * it doesn't contribute to the row's intrinsic height. Start exactly at
-   * the frame's bottom edge using its real height (--piece-h, inherited
-   * from the .gh-piece button) — a fixed 160px offset let taller frames on
-   * tall viewports overlap their own reflection. */
-  display: block;
+  /* Overlay the full-height piece column, then flip it about the piece's
+   * bottom edge (the shared floor line). Because every piece is stretched to
+   * the same height, this floor line is identical across the whole row, so
+   * all reflections mirror across ONE axis and read as a single exhibition
+   * floor — while the works themselves remain vertically centred. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: absolute;
-  top: var(--piece-h, 160px);
+  top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  margin-top: 2px;
-  /* Same SIZE as the painting (matched aspect-ratio inside the
-   * frame--ref). Mask softens only the very bottom of the reflection
-   * so it dissolves into the floor; the top 70% is fully visible at
-   * lower brightness via the inner filter. */
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.65) 50%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%);
-  mask-image: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.65) 50%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%);
+  transform: scaleY(-1);
+  transform-origin: center bottom;
+  /* Gradient runs strongest at the floor (local bottom, which maps to the
+   * floor line after the flip) and dissolves away from it. */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 15%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.85) 100%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 15%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.85) 100%);
   z-index: 1;
   pointer-events: none;
 }
 .gh-piece-frame--ref {
   width: 100%;
-  transform: scaleY(-1);
+  /* The reflection container handles the vertical flip now, so the frame
+   * itself is not flipped here. */
   background: transparent;
   background-image: none;
   border: 0;
@@ -542,6 +647,7 @@ em { font-family: var(--serif); font-style: italic; }
 }
 .gh-enter {
   display: inline-flex; align-items: center; gap: 14px;
+  white-space: nowrap;
   padding: 14px 30px;
   border: 1px solid var(--rule-2);
   border-radius: 999px;
@@ -568,36 +674,10 @@ em { font-family: var(--serif); font-style: italic; }
 .gh-corner-r { right: var(--pad); top: calc(var(--pad) - 12px); text-align: right; }
 .gh-corner-l .sub, .gh-corner-r .sub { color: var(--bone-5); }
 
-@media (max-width: 760px) {
-  /* On narrow viewports the single museum row overflows. Switch to a
-   * centered wrapping wall: each piece becomes a normal-flow column that
-   * carries its OWN reflection beneath it, so wrapped rows never overlap
-   * the row below (the desktop layout floats reflections absolutely). */
-  .gh-room { min-height: 0; }
-  .gh-hangrow {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: center;
-    gap: clamp(16px, 3.5vw, 30px) clamp(14px, 3.2vw, 26px);
-    padding: 4px 16px 0;
-  }
-  .gh-piece { display: flex; flex-direction: column; align-items: stretch; }
-  .gh-piece-frame {
-    height: auto;
-    width: clamp(108px, 22vw, 168px);
-    max-width: none;
-  }
-  .gh-piece-reflection {
-    position: static;
-    top: auto; left: auto;
-    width: 100%; height: auto;
-    margin-top: 2px;
-  }
-  .gh-floor { display: none; }
-}
-
+/* On narrow screens the single museum hang-row is scaled down uniformly by
+ * JS (see LandingSpotlight) so the arrangement is preserved — no reflow.
+ * Just retire the corner captions on small screens where they'd crowd. */
 @media (max-width: 540px) {
-  .gh-piece-frame { width: clamp(96px, 27vw, 138px); }
   .gh-corner-l, .gh-corner-r { display: none; }
 }
 
@@ -1553,7 +1633,9 @@ em { font-family: var(--serif); font-style: italic; }
   .gx-nav-label { writing-mode: horizontal-tb; transform: none; }
   .gx-plaque { grid-template-columns: 1fr; }
   .site-footer { grid-template-columns: 1fr; text-align: left; }
-  .site-footer .ft-r { justify-content: flex-start; flex-wrap: wrap; gap: 28px; margin-top: 24px; }
+  .site-footer .ft-r { align-items: flex-start; margin-top: 24px; }
+  .site-footer .ft-invite { text-align: left; }
+  .site-footer .ft-r-row { justify-content: flex-start; flex-wrap: wrap; gap: 28px; }
   .site-footer .ft-contact { text-align: left; }
 }
 
@@ -1617,6 +1699,7 @@ em { font-family: var(--serif); font-style: italic; }
   display: flex; align-items: center; justify-content: center;
   min-height: 0; min-width: 0;
   padding: 4px;
+  overflow: hidden;
 }
 .lb-figure {
   display: block;
@@ -1625,6 +1708,12 @@ em { font-family: var(--serif); font-style: italic; }
   max-height: min(100%, 82vh);
   object-fit: contain;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+  -webkit-user-select: none; user-select: none;
+}
+.lb-figure.is-zoomed {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  box-shadow: none;
 }
 /* Placeholder variant keeps an aspect-ratio box (no intrinsic image size). */
 .lb-figure--placeholder {
@@ -1688,6 +1777,30 @@ em { font-family: var(--serif); font-style: italic; }
   color: var(--bone-3);
   margin: 8px auto 0;
   max-width: 54ch;
+}
+
+/* Zoom affordance hint — sits at the bottom of the stage, fades on magnify. */
+.lb-zoomhint {
+  position: absolute;
+  left: 50%; bottom: 14px;
+  transform: translateX(-50%);
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--bone-4);
+  background: rgba(8, 8, 12, 0.55);
+  padding: 6px 14px; border-radius: 999px;
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.lb-stage:hover .lb-zoomhint { opacity: 0.85; }
+.lb--zoomed .lb-zoomhint { opacity: 0.7; }
+
+/* While magnified, clear the surrounding chrome so the surface is undisturbed. */
+.lb--zoomed .lb-plaque,
+.lb--zoomed .lb-nav,
+.lb--zoomed .lb-cat,
+.lb--zoomed .lb-count {
+  opacity: 0;
+  pointer-events: none;
 }
 
 @media (max-width: 720px) {
