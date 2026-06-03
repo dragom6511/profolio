@@ -54,7 +54,6 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
       <div className="gx-stage">
         <button className="gx-nav gx-nav-l" onClick={prev} aria-label={t.gallery.prev}>
           <span className="gx-nav-arrow">←</span>
-          <span className="gx-nav-label mono">{t.gallery.prev}</span>
         </button>
         <div className="gx-spot-art" data-flip-dir={dirRef.current}>
           {/* incoming / now-displayed work */}
@@ -82,7 +81,6 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
         </div>
         <button className="gx-nav gx-nav-r" onClick={next} aria-label={t.gallery.next}>
           <span className="gx-nav-arrow">→</span>
-          <span className="gx-nav-label mono">{t.gallery.next}</span>
         </button>
       </div>
 
@@ -90,7 +88,15 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
         <div className="gx-brief-no mono">
           W—{work.id}
         </div>
-        <h2 className="gx-brief-title">{wInfo.title}</h2>
+        <div className="gx-titlerow">
+          <button className="gx-nav gx-nav-m gx-nav-l" onClick={prev} aria-label={t.gallery.prev}>
+            <span className="gx-nav-arrow">←</span>
+          </button>
+          <h2 className="gx-brief-title">{wInfo.title}</h2>
+          <button className="gx-nav gx-nav-m gx-nav-r" onClick={next} aria-label={t.gallery.next}>
+            <span className="gx-nav-arrow">→</span>
+          </button>
+        </div>
         <div className="gx-brief-sub">{wInfo.sub}</div>
         <div className="gx-brief-line mono">
           <span>{work.year}</span>
