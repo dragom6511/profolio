@@ -59,7 +59,7 @@ window.COPY = {
     series_page: {
       title: "系列",
       subtitle: "Series",
-      lede: "三組作品，從寓言走向結構，最後通過裂縫。",
+      lede: "兩組作品，從寓言裡的龍，走到眼前的寫生。",
       pieces: "件作品",
     },
     journal: {
@@ -161,7 +161,7 @@ window.COPY = {
     series_page: {
       title: "Series",
       subtitle: "系列",
-      lede: "Three bodies of work — from fable, into structure, out through the seams.",
+      lede: "Two bodies of work — from the dragons of fable to drawing what stands before you.",
       pieces: "works",
     },
     journal: {

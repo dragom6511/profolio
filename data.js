@@ -29,18 +29,6 @@ window.SERIES = [
       note: "",
     },
   },
-  {
-    id: "mood-tiles",
-    no: "III",
-    zh: {
-      name: "心情磁磚",
-      note: "",
-    },
-    en: {
-      name: "Mood Tiles",
-      note: "",
-    },
-  },
 ];
 
 // Aspect can be either a category string ("wide" / "tall" / "square" /
@@ -229,7 +217,6 @@ window.ARTWORKS = [
     src: "assets/artwork-04.jpg",
     aspect: 2400 / 2384,
     year: 2025,
-    series: "mood-tiles",
     medium: { zh: "油性粉彩、有色紙", en: "Oil pastel on toned paper" },
     size: { zh: "", en: "" },
     zh: { title: "笑臉", sub: "" },
@@ -240,7 +227,6 @@ window.ARTWORKS = [
     src: "assets/artwork-05.jpg",
     aspect: 1,
     year: 2024,
-    series: "mood-tiles",
     medium: { zh: "油性粉彩、有色紙", en: "Oil pastel on toned paper" },
     size: { zh: "", en: "" },
     zh: { title: "心動", sub: "" },
