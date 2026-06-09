@@ -9,17 +9,51 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
   filter((w) => w.src && w.id !== "02" && (typeof w.aspect !== "number" || w.aspect <= 1.7)).
   slice(0, 5);
 
-  // Per-piece display height. Real museum hang scales paintings by their
-  // physical size — portraits dominate, landscapes are quieter. We use
-  // each work's aspect ratio as a proxy: taller pieces hang larger.
-  // Returns a CSS length string that respects viewport via vh.
-  const pieceHeight = (w) => {
-    const a = typeof w.aspect === "number" ? w.aspect : 1;
-    if (a < 0.7) return "clamp(160px, 28vh, 280px)"; // tall portrait
-    if (a < 0.95) return "clamp(150px, 25vh, 250px)"; // portrait
-    if (a < 1.15) return "clamp(120px, 20vh, 200px)"; // square
-    return "clamp(100px, 16vh, 160px)"; // landscape
+  // Per-piece display size driven by the work's REAL physical dimensions.
+  // We parse the centimetre size (e.g. "41.0 × 58.0 公分") and set the frame
+  // height to realHeightCm × K pixels. Because the frame's width comes from its
+  // aspect ratio (realW/realH), BOTH dimensions end up proportional to the true
+  // painting — so a 58 cm piece hangs visibly larger than a 21 cm one, exactly
+  // like a real museum wall. The whole row auto-scales to fit the viewport
+  // (see the transform below), preserving these relative proportions on any
+  // screen. Works missing a size fall back to a mid value so they still hang.
+  const PX_PER_CM = 5;        // display scale
+  const FALLBACK_CM = 36;     // height used when a work has no recorded size
+  const realHeightCm = (w) => {
+    const raw = (w.size && (w.size.zh || w.size.en)) || "";
+    const nums = raw.match(/[\d.]+/g); // "W × H" → height is the second number
+    if (nums && nums.length >= 2) {
+      const h = parseFloat(nums[1]);
+      if (isFinite(h) && h > 0) return h;
+    }
+    return FALLBACK_CM;
   };
+  const pieceHeight = (w) => {
+    const px = realHeightCm(w) * PX_PER_CM;
+    // Generous guard rails so an outlier can't blow up or vanish; the current
+    // collection (≈21–58 cm) sits inside and stays fully proportional.
+    return `clamp(64px, ${px.toFixed(0)}px, 340px)`;
+  };
+
+  // Arrange the wall as a "mountain": the largest piece anchors the centre,
+  // and pieces step DOWN in size toward both outer edges. This reads as a
+  // balanced, symmetric hang whose silhouette peaks in the middle — far calmer
+  // than the raw data order. Built from display height so it self-maintains as
+  // sizes/works change. (Sort by height desc, then fan out from centre,
+  // alternating right then left, so the two smallest land on the outer edges.)
+  const hangWorks = (() => {
+    const sorted = [...wallWorks].sort((a, b) => realHeightCm(b) - realHeightCm(a));
+    const n = sorted.length;
+    const res = new Array(n);
+    const c = Math.floor((n - 1) / 2);
+    let left = c - 1, right = c + 1;
+    res[c] = sorted[0];
+    for (let i = 1; i < n; i++) {
+      if (i % 2 === 1) res[right++] = sorted[i];
+      else res[left--] = sorted[i];
+    }
+    return res;
+  })();
 
   // "Museum scaling": instead of reflowing the single hang-row into a grid on
   // narrow screens, keep the EXACT arrangement and scale the whole row down
@@ -86,7 +120,7 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
 
         <div className="gh-hangrow">
           <div className="gh-hangrow-inner" ref={innerRef}>
-          {wallWorks.map((w) =>
+          {hangWorks.map((w) =>
           <button
             key={w.id}
             className="gh-piece"

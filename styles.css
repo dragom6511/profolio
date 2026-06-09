@@ -528,7 +528,11 @@ em { font-family: var(--serif); font-style: italic; }
    * width is derived via aspect-ratio. */
   height: var(--piece-h, clamp(140px, 20vh, 220px));
   width: auto;
-  max-width: clamp(160px, 22vw, 320px);
+  /* No per-piece width cap: the frame's box already matches the painting's
+   * aspect-ratio (width derived from height × aspect), and the whole row
+   * auto-scales to fit the viewport. An independent max-width would distort
+   * the box and make background-size crop the work. */
+  max-width: none;
   /* No matting, no moulding — present the work bare, as in a contemporary
    * gallery's flush mount. Subtle drop shadow keeps the piece visually
    * separated from the wall behind it. */
@@ -551,7 +555,8 @@ em { font-family: var(--serif); font-style: italic; }
 .gh-piece-art {
   display: block;
   width: 100%; height: 100%;
-  background-size: cover;
+  /* contain (not cover) so the full painting is always visible, never cropped. */
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
