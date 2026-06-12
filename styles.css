@@ -645,10 +645,10 @@ em { font-family: var(--serif); font-style: italic; }
 .gh-en {
   font-family: var(--serif-zh);
   font-weight: 300;
-  font-size: clamp(15px, 1.4vw, 21px);
-  letter-spacing: 0.06em;
-  line-height: 1.4;
-  color: var(--bone-4);
+  font-size: clamp(20px, 2.1vw, 30px);
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: var(--bone-2);
 }
 .gh-enter {
   display: inline-flex; align-items: center; gap: 14px;

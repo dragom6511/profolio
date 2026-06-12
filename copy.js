@@ -30,7 +30,7 @@ window.COPY = {
     statement_title: "創作自述",
     statement_subtitle: "Statement",
     statement_body: [
-      "我透過繪畫描繪出一個空無一人的世界。\n在這片空曠而寧靜的場域裡，我們所熟悉的一切並非永遠存在。\n當喧囂褪去，展開與自我的對話，思索社會與生活的變遷，以及身處其中所面臨的課題。\n身而為人，當我們踏入其中，會看見什麼？ 這樣的提問，始終貫穿於我的創作之中。",
+      "我畫出一個空無一人的世界。\n在這片空曠而寧靜的場域裡，展開與自我的對話。\n當喧囂褪去，拋開人類的框架，你會看見什麼？\n這樣的提問，始終貫穿於我的創作之中。",
     ],
     gallery: {
       title: "作品",
@@ -132,7 +132,7 @@ window.COPY = {
     statement_title: "Statement",
     statement_subtitle: "創作自述",
     statement_body: [
-      "I make worlds with no one in them. To step into such a place as a human being — what is it that you would see? Through painting I work in a quiet vocabulary, describing a conversation held with the self. Nothing we are familiar with should be taken for granted as lasting forever; to think through how society and daily life keep changing is one of the essential questions of our time.",
+      "I paint a world with no one in it.\nWithin this empty, quiet expanse, a conversation with the self begins.\nWhen the noise falls away and the human frame is set aside, what is it that you would see?\nThat question has run through my work from the very start.",
     ],
     gallery: {
       title: "Works",

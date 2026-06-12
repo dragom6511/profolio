@@ -85,9 +85,6 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
       </div>
 
       <div className="gx-brief">
-        <div className="gx-brief-no mono">
-          W—{work.id}
-        </div>
         <div className="gx-titlerow">
           <button className="gx-nav gx-nav-m gx-nav-l" onClick={prev} aria-label={t.gallery.prev}>
             <span className="gx-nav-arrow">←</span>
