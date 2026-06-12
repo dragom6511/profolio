@@ -17,10 +17,10 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
   // like a real museum wall. The whole row auto-scales to fit the viewport
   // (see the transform below), preserving these relative proportions on any
   // screen. Works missing a size fall back to a mid value so they still hang.
-  const PX_PER_CM = 5;        // display scale
-  const FALLBACK_CM = 36;     // height used when a work has no recorded size
+  const PX_PER_CM = 5; // display scale
+  const FALLBACK_CM = 36; // height used when a work has no recorded size
   const realHeightCm = (w) => {
-    const raw = (w.size && (w.size.zh || w.size.en)) || "";
+    const raw = w.size && (w.size.zh || w.size.en) || "";
     const nums = raw.match(/[\d.]+/g); // "W × H" → height is the second number
     if (nums && nums.length >= 2) {
       const h = parseFloat(nums[1]);
@@ -46,11 +46,11 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
     const n = sorted.length;
     const res = new Array(n);
     const c = Math.floor((n - 1) / 2);
-    let left = c - 1, right = c + 1;
+    let left = c - 1,right = c + 1;
     res[c] = sorted[0];
     for (let i = 1; i < n; i++) {
-      if (i % 2 === 1) res[right++] = sorted[i];
-      else res[left--] = sorted[i];
+      if (i % 2 === 1) res[right++] = sorted[i];else
+      res[left--] = sorted[i];
     }
     return res;
   })();
@@ -91,7 +91,7 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
     // Measure after the browser has actually laid out + painted the flex row.
     // A single rAF can still fire before the first layout on a cold load, so
     // double-rAF and a short timeout act as belt-and-suspenders.
-    let raf1 = 0, raf2 = 0;
+    let raf1 = 0,raf2 = 0;
     raf1 = requestAnimationFrame(() => {
       raf2 = requestAnimationFrame(recompute);
     });
@@ -121,32 +121,32 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
         <div className="gh-hangrow">
           <div className="gh-hangrow-inner" ref={innerRef}>
           {hangWorks.map((w) =>
-          <button
-            key={w.id}
-            className="gh-piece"
-            style={{ "--piece-h": pieceHeight(w) }}
-            onClick={() => onOpen && onOpen(window.ARTWORKS.indexOf(w))}
-            title={lang === "zh" ? w.zh.title : w.en.title}>
+            <button
+              key={w.id}
+              className="gh-piece"
+              style={{ "--piece-h": pieceHeight(w) }}
+              onClick={() => onOpen && onOpen(window.ARTWORKS.indexOf(w))}
+              title={lang === "zh" ? w.zh.title : w.en.title}>
             
               <span className="gh-piece-spot" />
               <span
-              className="gh-piece-frame"
-              style={{ aspectRatio: window.aspectFor(w), "--piece-h": pieceHeight(w) }}>
+                className="gh-piece-frame"
+                style={{ aspectRatio: window.aspectFor(w), "--piece-h": pieceHeight(w) }}>
                 <span
-                className="gh-piece-art"
-                style={{ backgroundImage: `url(${w.src})` }} />
+                  className="gh-piece-art"
+                  style={{ backgroundImage: `url(${w.src})` }} />
               </span>
               {/* Reflection sits directly under each frame, flipped vertically and
-              fading downward. */}
+                           fading downward. */}
               <span className="gh-piece-reflection" aria-hidden="true">
                 <span className="gh-piece-frame gh-piece-frame--ref" style={{ aspectRatio: window.aspectFor(w) }}>
                   <span
-                  className="gh-piece-art"
-                  style={{ backgroundImage: `url(${w.src})` }} />
+                    className="gh-piece-art"
+                    style={{ backgroundImage: `url(${w.src})` }} />
                 </span>
               </span>
             </button>
-          )}
+            )}
           </div>
         </div>
 
@@ -156,8 +156,8 @@ function LandingSpotlight({ t, lang, onEnter, onOpen }) {
       <div className="gh-invitation">
         <div className="gh-invitation-rule" />
         <div className="gh-invitation-title">
-          <span className="gh-zh">{t.landing.hero_title}</span>
-          <span className="gh-en">{t.landing.hero_title_2}</span>
+          <span className="gh-zh" style={{ fontSize: "28px" }}>{t.landing.hero_title}</span>
+          <span className="gh-en" style={{ fontSize: "18px", color: "rgb(187, 181, 169)" }}>{t.landing.hero_title_2}</span>
         </div>
         <button className="gh-enter" onClick={onEnter}>
           <span>{t.landing.enter}</span>
