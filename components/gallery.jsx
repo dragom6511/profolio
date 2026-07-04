@@ -111,6 +111,23 @@ function GallerySpotlight({ t, lang, index, setIndex, onPickSeries, activeSeries
               <span>{seriesName}</span>
             </>
           }
+          {(Array.isArray(work.postUrl) ? work.postUrl : work.postUrl ? [work.postUrl] : []).map((url, i, arr) =>
+          <a
+            key={i}
+            className="ig-icon"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            aria-label={(lang === "zh" ? "在 Instagram 查看" : "View on Instagram") + (arr.length > 1 ? " " + (i + 1) : "")}
+            title={(lang === "zh" ? "在 Instagram 查看" : "View on Instagram") + (arr.length > 1 ? " " + (i + 1) : "")}>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4.2" />
+              <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
+          )}
         </div>
         {work.zh.caption &&
         <p className="gx-brief-caption">

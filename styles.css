@@ -1159,7 +1159,7 @@ em { font-family: var(--serif); font-style: italic; }
   white-space: pre-line;
 }
 .gx-brief-line {
-  display: inline-flex; justify-content: center; gap: 10px;
+  display: inline-flex; justify-content: center; align-items: center; gap: 10px;
   color: var(--bone-4);
   margin-top: 6px;
   flex-wrap: wrap;
@@ -1787,7 +1787,7 @@ em { font-family: var(--serif); font-style: italic; }
   font-size: clamp(13px, 1vw, 15px);
 }
 .lb-meta {
-  display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px;
   color: var(--bone-4);
   margin-top: 2px;
 }
@@ -1799,6 +1799,19 @@ em { font-family: var(--serif); font-style: italic; }
   margin: 8px auto 0;
   max-width: 54ch;
 }
+
+/* Quiet icon-only link to the artwork's original social post. Shared by the
+ * lightbox plaque and the spotlight brief — sits inline at the end of the
+ * meta row, lavender on hover. */
+.ig-icon {
+  display: inline-flex; align-items: center;
+  margin-left: 2px;
+  color: var(--bone-4);
+  text-decoration: none;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.ig-icon svg { display: block; }
+.ig-icon:hover { color: var(--moon); transform: translateY(-1px); }
 
 /* Zoom affordance hint — sits at the bottom of the stage, fades on magnify. */
 .lb-zoomhint {

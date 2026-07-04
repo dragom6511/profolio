@@ -116,7 +116,20 @@ function Lightbox({ list, index, setIndex, onClose, lang, t }) {
       </button>
 
       <div className="lb-stage" onClick={(e) => e.stopPropagation()}>
-        {work.src ?
+        {work.video ?
+        <video
+          className={`lb-figure lb-figure--${dir}`}
+          key={work.id}
+          src={work.video}
+          poster={work.src || undefined}
+          autoPlay
+          loop
+          muted
+          playsInline
+          draggable={false}
+          style={figureStyle} /> :
+
+        work.src ?
         <img
           className={`lb-figure ${zoomed ? "is-zoomed" : `lb-figure--${dir}`}`}
           key={work.id}
@@ -159,6 +172,23 @@ function Lightbox({ list, index, setIndex, onClose, lang, t }) {
           {medium && <><span className="sep">·</span><span>{medium}</span></>}
           {size && <><span className="sep">·</span><span>{size}</span></>}
           {seriesName && <><span className="sep">·</span><span>{seriesName}</span></>}
+          {(Array.isArray(work.postUrl) ? work.postUrl : work.postUrl ? [work.postUrl] : []).map((url, i, arr) =>
+          <a
+            key={i}
+            className="ig-icon"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            aria-label={(lang === "zh" ? "在 Instagram 查看" : "View on Instagram") + (arr.length > 1 ? " " + (i + 1) : "")}
+            title={(lang === "zh" ? "在 Instagram 查看" : "View on Instagram") + (arr.length > 1 ? " " + (i + 1) : "")}>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4.2" />
+              <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
+          )}
         </div>
         {wInfo.caption && <p className="lb-caption">{wInfo.caption}</p>}
       </div>

@@ -59,6 +59,39 @@ function useNearViewport(margin = 700) {
 function ArtworkImage({ work, label, sizing = "contain", className = "", style = {} }) {
   // Hook must run unconditionally — call it before any early return.
   const [lazyRef, shown] = useNearViewport();
+
+  // Animated pieces: an MP4/WebM that loops silently in place. The static
+  // `src` acts as poster + fallback, so the piece still reads before the video
+  // loads (and in PPTX/PDF export, which don't play video).
+  if (work.video) {
+    const objectFit = sizing === "cover" ? "cover" : "contain";
+    return (
+      <div
+        ref={lazyRef}
+        className={`artwork-img has-src ${className}`}
+        style={{ ...style }}
+      >
+        {shown &&
+        <video
+          src={work.video}
+          poster={work.src || undefined}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          draggable={false}
+          style={{
+            width: "100%", height: "100%",
+            objectFit,
+            display: "block",
+          }}
+        />
+        }
+      </div>
+    );
+  }
+
   if (work.src) {
     const borderedCls = work.bordered ? " bordered" : "";
     return (

@@ -43,11 +43,53 @@ window.SERIES = [
   },
 ];
 
+// Optional `video`: an MP4/WebM that loops silently in place of the static
+// image (for animated pieces). Keep `src` too — it's the poster/fallback and
+// what PPTX/PDF export use. e.g.
+//   video: "assets/artwork-62.mp4", src: "assets/artwork-62.webp",
+//
 // Aspect can be either a category string ("wide" / "tall" / "square" /
 // "panorama") or a numeric width/height ratio. Numeric wins. See artwork.jsx.
+//
+// Optional `postUrl`: the original Instagram (or other social) post for this
+// piece. When present, a quiet Instagram icon appears at the end of the meta
+// row in the lightbox and spotlight brief. Leave it out and no icon shows.
+//   one post:  postUrl: "https://www.instagram.com/p/ABC123/",
+//   two posts: postUrl: ["https://.../p/ABC/", "https://.../p/XYZ/"],
 
 window.ARTWORKS = [
   // ─── No-series ──────────────────────────────────────────────────────────
+  {
+    id: "62",
+    src: "assets/artwork-62.webp",
+    video: "assets/artwork-62.mp4",
+    aspect: 1730 / 2400,
+    year: 2023,
+    medium: { zh: "油性粉彩、紙", en: "Oil pastel on paper" },
+    size: { zh: "29.7 × 40.5 公分", en: "29.7 × 40.5 cm" },
+    zh: { title: "夏之蟲·螢之心", sub: "" },
+    en: { title: "Summer Insect, Firefly Heart", sub: "" },
+  },
+  {
+    id: "61",
+    src: "assets/artwork-61.webp",
+    aspect: 1586 / 2400,
+    year: 2022,
+    medium: { zh: "水彩、色鉛筆、水粉、紙", en: "Watercolor, colored pencil and gouache on paper" },
+    size: { zh: "28.0 × 37.8 公分", en: "28.0 × 37.8 cm" },
+    zh: { title: "曙洞", sub: "" },
+    en: { title: "Cave of Dawn", sub: "" },
+  },
+  {
+    id: "60",
+    src: "assets/artwork-60.webp",
+    aspect: 2400 / 1770,
+    year: 2021,
+    medium: { zh: "水彩、色鉛筆、紙", en: "Watercolor and colored pencil on paper" },
+    size: { zh: "37.8 × 28.0 公分", en: "37.8 × 28.0 cm" },
+    zh: { title: "彩虹城堡", sub: "SOLD" },
+    en: { title: "Rainbow Castle", sub: "SOLD" },
+  },
   {
     id: "48",
     src: "assets/artwork-48.webp",
@@ -62,6 +104,7 @@ window.ARTWORKS = [
     id: "01",
     bordered: true,
     src: "assets/artwork-01.jpg",
+    postUrl: "https://www.instagram.com/p/DVnZrtZAOKE/",
     aspect: 2400 / 1255,
     year: 2025,
     medium: { zh: "油性粉彩、紙", en: "Oil pastel on paper" },
@@ -81,6 +124,7 @@ window.ARTWORKS = [
     id: "03",
     bordered: true,
     src: "assets/artwork-03.jpg",
+    postUrl: "https://www.instagram.com/p/DUtAZStkqmb/?img_index=1",
     aspect: 2347 / 1705,
     year: 2026,
     medium: { zh: "油性粉彩、紙", en: "Oil pastel on paper" },
@@ -101,6 +145,7 @@ window.ARTWORKS = [
   {
     id: "02",
     src: "assets/artwork-02.jpg",
+    postUrl: "https://www.instagram.com/p/DY_d3qFSuX2/",
     aspect: 2400 / 1013,
     year: 2025,
     medium: { zh: "油性粉彩、木板", en: "Oil pastel on wood" },
@@ -154,6 +199,7 @@ window.ARTWORKS = [
     id: "09",
     bordered: true,
     src: "assets/artwork-09.jpg",
+    postUrl: "https://www.instagram.com/p/DYJfWcxACyu/",
     aspect: 2400 / 1647,
     year: 2025,
     medium: { zh: "油性粉彩、紙", en: "Oil pastel on paper" },
@@ -383,6 +429,7 @@ window.ARTWORKS = [
   {
     id: "30",
     src: "assets/artwork-30.jpg",
+    postUrl: "https://www.instagram.com/p/DYW4vbgS_On/",
     aspect: 1.408,
     year: 2025,
     series: "plein-air",
@@ -579,7 +626,7 @@ window.ARTWORKS = [
     en: { title: "Sketching Day in Hsinchu", sub: "" },
   },
 
-  // ─── 魔幻時刻 / Magic Hour（電繪）— 標題與年份為暫定，待確認 ──────────
+  // ─── 魔幻時刻 / Magic Hour（電繪）─────────────────────────────────────
   {
     id: "49",
     src: "assets/artwork-49.webp",
@@ -702,3 +749,18 @@ window.ARTWORKS = [
     en: { title: "Untitled 11", sub: "" },
   },
 ];
+
+// Display order for the gallery "全部" view and the home page:
+//   1. group — works with NO series come first, series works after
+//   2. within each group — by year, newest first
+// Stable sort preserves the hand-tuned order of pieces sharing a year.
+window.ARTWORKS = window.ARTWORKS
+  .map((w, i) => [w, i])
+  .sort((a, b) => {
+    const ga = a[0].series ? 1 : 0;
+    const gb = b[0].series ? 1 : 0;
+    if (ga !== gb) return ga - gb;          // no-series before series
+    if (b[0].year !== a[0].year) return b[0].year - a[0].year; // newest first
+    return a[1] - b[1];                      // keep original order otherwise
+  })
+  .map((pair) => pair[0]);
